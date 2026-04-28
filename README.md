@@ -25,6 +25,30 @@
 
 ---
 
+## 📸 Aperçu du dashboard
+
+<div align="center">
+
+![Dashboard — Vue d'ensemble](docs/screenshots/vue-d-ensemble.png)
+
+</div>
+
+<details>
+<summary><b>📊 Voir les autres pages du dashboard</b></summary>
+
+### 🎤 Top artistes
+![Top artistes](docs/screenshots/top-artistes.png)
+
+### 🎵 Top titres
+![Top titres](docs/screenshots/top-titres.png)
+
+### 📈 Tendances albums
+![Tendances albums](docs/screenshots/tendances-albums.png)
+
+</details>
+
+---
+
 ## 🎯 Vue d'ensemble
 
 Pipeline **ELT** complet pour analyser les tendances du streaming musical sur **9 marchés européens** (France, Allemagne, Espagne, Italie, Pays-Bas, Belgique, Portugal, Suisse, Luxembourg) en croisant **deux sources** :
