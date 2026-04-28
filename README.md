@@ -19,7 +19,7 @@
 [![Tests](https://img.shields.io/badge/Tests-36_pytest_+_25_dbt-success)]()
 [![Models](https://img.shields.io/badge/dbt-9_models-FF694B)]()
 
-**[📊 Voir le dashboard Looker →](https://lookerstudio.google.com)** · **[📖 Guide architecture](CLAUDE.md)** · **[🎨 Guide dashboard](looker/DASHBOARD_GUIDE.md)**
+**[📊 Voir le dashboard Looker →](https://datastudio.google.com/reporting/4dccc97d-d75a-4fc5-9701-f9db3cccd247)** · **[📖 Guide architecture](CLAUDE.md)** · **[🎨 Guide dashboard](looker/DASHBOARD_GUIDE.md)**
 
 </div>
 
