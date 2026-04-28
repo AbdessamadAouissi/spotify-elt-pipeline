@@ -1,0 +1,53 @@
+# Credentials & secrets — NE JAMAIS COMMITTER
+.env
+
+# Environnement virtuel Python
+.venv/
+.venv_dbt/
+venv/
+env/
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests & coverage
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Docker (pas le .dockerignore lui-même)
+
+# dbt
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+dbt/.user.yml
+
+# Claude Code local settings
+.claude/
+
+# Prefect
+.prefect/
+
+# Spotify Charts CSV (données téléchargées — non committées)
+charts/*.csv

@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  # ── Pipeline complet (extraction) ───────────────────────────────────────
+  pipeline:
+    build: .
+    env_file: .env
+    volumes:
+      - ${HOME}/.config/gcloud:/root/.config/gcloud:ro
+    command: python pipeline.py
+
+  # ── 3 passes d'extraction + SQL (script legacy) ─────────────────────────
+  harvest:
+    build: .
+    env_file: .env
+    volumes:
+      - ${HOME}/.config/gcloud:/root/.config/gcloud:ro
+    command: python run_full_harvest.py
+
+  # ── SQL uniquement Bronze → Silver → Gold (legacy) ──────────────────────
+  sql:
+    build: .
+    env_file: .env
+    volumes:
+      - ${HOME}/.config/gcloud:/root/.config/gcloud:ro
+    command: python run_sql_pipeline.py
+
+  # ── dbt : transformations Silver + Gold ─────────────────────────────────
+  dbt:
+    build: .
+    env_file: .env
+    volumes:
+      - ${HOME}/.config/gcloud:/root/.config/gcloud:ro
+      - ./dbt:/app/dbt
+    command: >
+      sh -c "dbt run --project-dir dbt --profiles-dir dbt &&
+             dbt test --project-dir dbt --profiles-dir dbt"
+
+  # ── Prefect flow (extraction + dbt) ─────────────────────────────────────
+  flow:
+    build: .
+    env_file: .env
+    volumes:
+      - ${HOME}/.config/gcloud:/root/.config/gcloud:ro
+    command: python flows/spotify_pipeline_flow.py
+
+  # ── Tests unitaires ─────────────────────────────────────────────────────
+  test:
+    build: .
+    env_file: .env
+    command: pytest tests/ -v --cov=. --cov-report=term-missing

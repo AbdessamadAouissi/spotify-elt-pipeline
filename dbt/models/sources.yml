@@ -1,0 +1,48 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: "{{ env_var('GCP_PROJECT_ID') }}"
+    schema: spotify_bronze
+    description: "Tables externes BigQuery sur les fichiers NDJSON stockés dans GCS (couche Bronze)."
+
+    tables:
+      - name: artists
+        description: "Artistes extraits via l'API Spotify /search."
+        columns:
+          - name: id
+            description: "Identifiant unique Spotify de l'artiste."
+          - name: name
+            description: "Nom de l'artiste."
+
+      - name: albums
+        description: "Albums extraits via l'API Spotify /search."
+        columns:
+          - name: id
+            description: "Identifiant unique Spotify de l'album."
+          - name: name
+            description: "Titre de l'album."
+          - name: release_date
+            description: "Date de sortie (type DATE)."
+
+      - name: tracks
+        description: "Titres extraits via l'API Spotify /search."
+        columns:
+          - name: id
+            description: "Identifiant unique Spotify du titre."
+          - name: name
+            description: "Titre de la chanson."
+
+      - name: album_tracks
+        description: "Titres extraits album par album via /albums/{id}/tracks."
+        columns:
+          - name: id
+            description: "Identifiant unique Spotify du titre."
+
+      - name: playlists
+        description: "Playlists extraites via l'API Spotify /search."
+        columns:
+          - name: id
+            description: "Identifiant unique Spotify de la playlist."
+          - name: name
+            description: "Nom de la playlist."

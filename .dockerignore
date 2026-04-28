@@ -1,0 +1,17 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.git/
+.github/
+tests/
+.pytest_cache/
+coverage.xml
+htmlcov/
+docs/screenshots/
+*.log
+.DS_Store
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+.prefect/

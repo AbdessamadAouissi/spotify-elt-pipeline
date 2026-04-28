@@ -1,0 +1,37 @@
+# Prefect deployment configuration
+# Run:  prefect deploy --all
+# Docs: https://docs.prefect.io/latest/deploy/
+
+name: spotify-elt
+prefect-version: "2.*"
+
+build: null
+push:  null
+
+pull:
+  - prefect.deployments.steps.set_working_directory:
+      directory: .
+
+deployments:
+  - name: spotify-weekly
+    description: "Weekly full pipeline run every Monday at 06:00 UTC."
+    entrypoint: flows/spotify_pipeline_flow.py:spotify_pipeline
+    schedule:
+      cron: "0 6 * * 1"
+      timezone: "Europe/Paris"
+    parameters:
+      run_tests: true
+    tags:
+      - spotify
+      - elt
+      - weekly
+
+  - name: spotify-manual
+    description: "Manual trigger — no schedule."
+    entrypoint: flows/spotify_pipeline_flow.py:spotify_pipeline
+    parameters:
+      run_tests: true
+    tags:
+      - spotify
+      - elt
+      - manual

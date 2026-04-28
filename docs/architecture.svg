@@ -1,0 +1,198 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 620" font-family="Arial, sans-serif">
+
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#555"/>
+    </marker>
+    <marker id="arrL" markerWidth="8" markerHeight="8" refX="2" refY="3" orient="auto">
+      <path d="M8,0 L8,6 L0,3 z" fill="#555"/>
+    </marker>
+    <marker id="arrD" markerWidth="8" markerHeight="8" refX="3" refY="6" orient="auto">
+      <path d="M0,0 L6,0 L3,8 z" fill="#555"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1020" height="620" fill="#0d1117" rx="14"/>
+
+  <!-- Title -->
+  <text x="510" y="36" text-anchor="middle" font-size="17" font-weight="bold" fill="#ffffff">
+    Spotify ELT Pipeline — GCP Medallion Architecture
+  </text>
+  <text x="510" y="54" text-anchor="middle" font-size="11" fill="#666">
+    Python · dbt · Prefect · Google Cloud Storage · BigQuery · Looker Studio
+  </text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PREFECT ORCHESTRATION OUTER BORDER
+  ════════════════════════════════════════════════════════ -->
+  <rect x="18" y="68" width="700" height="530" rx="12"
+        fill="none" stroke="#1D4ED8" stroke-width="1.5" stroke-dasharray="7,4" opacity="0.5"/>
+  <rect x="26" y="60" width="130" height="20" fill="#0d1117"/>
+  <text x="91" y="74" text-anchor="middle" font-size="11" font-weight="bold" fill="#60A5FA">
+    Prefect Orchestration
+  </text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       ROW 1 : EXTRACTION
+  ════════════════════════════════════════════════════════ -->
+
+  <!-- Spotify API -->
+  <rect x="38" y="88" width="148" height="100" rx="9"
+        fill="#1DB954" fill-opacity="0.12" stroke="#1DB954" stroke-width="1.5"/>
+  <text x="112" y="111" text-anchor="middle" font-size="12" font-weight="bold" fill="#1DB954">Spotify API</text>
+  <text x="112" y="129" text-anchor="middle" font-size="10" fill="#9ca3af">/search</text>
+  <text x="112" y="143" text-anchor="middle" font-size="10" fill="#9ca3af">/albums/{id}/tracks</text>
+  <text x="112" y="157" text-anchor="middle" font-size="10" fill="#9ca3af">OAuth 2.0 Client Creds</text>
+  <text x="112" y="174" text-anchor="middle" font-size="9" fill="#555">rate limit · retry</text>
+
+  <!-- Arrow Spotify → Extractors -->
+  <line x1="186" y1="138" x2="224" y2="138" stroke="#444" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="205" y="131" text-anchor="middle" font-size="8" fill="#6b7280">requests</text>
+
+  <!-- Python Extractors -->
+  <rect x="224" y="88" width="160" height="100" rx="9"
+        fill="#3776AB" fill-opacity="0.12" stroke="#3776AB" stroke-width="1.5"/>
+  <text x="304" y="111" text-anchor="middle" font-size="12" font-weight="bold" fill="#60A5FA">Python Extractors</text>
+  <text x="304" y="129" text-anchor="middle" font-size="10" fill="#9ca3af">albums · artists</text>
+  <text x="304" y="143" text-anchor="middle" font-size="10" fill="#9ca3af">tracks · album_tracks</text>
+  <text x="304" y="157" text-anchor="middle" font-size="10" fill="#9ca3af">playlists</text>
+  <text x="304" y="174" text-anchor="middle" font-size="9" fill="#555">tenacity backoff · 429</text>
+
+  <!-- Arrow Extractors → GCS -->
+  <line x1="384" y1="138" x2="422" y2="138" stroke="#444" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="403" y="131" text-anchor="middle" font-size="8" fill="#6b7280">NDJSON</text>
+
+  <!-- GCS Bronze -->
+  <rect x="422" y="80" width="178" height="116" rx="9"
+        fill="#CD7F32" fill-opacity="0.12" stroke="#CD853F" stroke-width="1.5"/>
+  <text x="511" y="103" text-anchor="middle" font-size="12" font-weight="bold" fill="#F59E0B">GCS — Bronze</text>
+  <text x="511" y="120" text-anchor="middle" font-size="9" fill="#9ca3af">bronze/artists/year=Y/month=M/</text>
+  <text x="511" y="134" text-anchor="middle" font-size="9" fill="#9ca3af">bronze/albums/year=Y/month=M/</text>
+  <text x="511" y="148" text-anchor="middle" font-size="9" fill="#9ca3af">bronze/tracks/ · bronze/album_tracks/</text>
+  <text x="511" y="162" text-anchor="middle" font-size="9" fill="#9ca3af">bronze/playlists/</text>
+  <text x="511" y="180" text-anchor="middle" font-size="9" fill="#555">Hive-style partitioning</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       BQ BRONZE (right panel)
+  ════════════════════════════════════════════════════════ -->
+  <rect x="740" y="80" width="262" height="116" rx="9"
+        fill="#CD7F32" fill-opacity="0.08" stroke="#CD853F" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="871" y="103" text-anchor="middle" font-size="12" font-weight="bold" fill="#F59E0B">BigQuery · spotify_bronze</text>
+  <text x="871" y="121" text-anchor="middle" font-size="10" fill="#9ca3af">External Tables (auto-schema)</text>
+  <text x="871" y="137" text-anchor="middle" font-size="10" fill="#9ca3af">artists · albums · tracks</text>
+  <text x="871" y="153" text-anchor="middle" font-size="10" fill="#9ca3af">album_tracks · playlists</text>
+  <text x="871" y="170" text-anchor="middle" font-size="9" fill="#555">WITH PARTITION COLUMNS</text>
+  <text x="871" y="186" text-anchor="middle" font-size="9" fill="#555">year / month / day</text>
+
+  <!-- Arrow GCS → BQ Bronze -->
+  <line x1="600" y1="138" x2="738" y2="138" stroke="#444" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="669" y="128" text-anchor="middle" font-size="9" fill="#6b7280">External Tables</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       DBT BORDER
+  ════════════════════════════════════════════════════════ -->
+  <rect x="700" y="216" width="302" height="298" rx="10"
+        fill="none" stroke="#FF694B" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.6"/>
+  <rect x="708" y="208" width="50" height="18" fill="#0d1117"/>
+  <text x="733" y="221" text-anchor="middle" font-size="10" font-weight="bold" fill="#FF694B">dbt</text>
+
+  <!-- Arrow BQ Bronze → BQ Silver -->
+  <line x1="871" y1="196" x2="871" y2="232" stroke="#444" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="886" y="216" font-size="9" fill="#FF694B">dbt run</text>
+
+  <!-- BQ Silver -->
+  <rect x="716" y="232" width="270" height="122" rx="9"
+        fill="#C0C0C0" fill-opacity="0.08" stroke="#9ca3af" stroke-width="1.5"/>
+  <text x="851" y="254" text-anchor="middle" font-size="12" font-weight="bold" fill="#d1d5db">BigQuery · spotify_silver</text>
+  <text x="851" y="272" text-anchor="middle" font-size="10" fill="#9ca3af">stg_artists · stg_albums</text>
+  <text x="851" y="288" text-anchor="middle" font-size="10" fill="#9ca3af">stg_tracks · stg_playlists</text>
+  <text x="851" y="304" text-anchor="middle" font-size="10" fill="#9ca3af">Nettoyage · Typage · Déduplication</text>
+  <text x="851" y="322" text-anchor="middle" font-size="9" fill="#555">PARTITION BY extraction_date · CLUSTER BY id</text>
+  <text x="851" y="340" text-anchor="middle" font-size="9" fill="#555">318 artists · 1 130 tracks · 70 albums · 1 418 playlists</text>
+
+  <!-- Arrow BQ Silver → BQ Gold -->
+  <line x1="851" y1="354" x2="851" y2="390" stroke="#444" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="866" y="374" font-size="9" fill="#FF694B">dbt run</text>
+
+  <!-- BQ Gold -->
+  <rect x="716" y="390" width="270" height="112" rx="9"
+        fill="#FFD700" fill-opacity="0.08" stroke="#FFD700" stroke-width="1.5"/>
+  <text x="851" y="412" text-anchor="middle" font-size="12" font-weight="bold" fill="#FCD34D">BigQuery · spotify_gold</text>
+  <text x="851" y="430" text-anchor="middle" font-size="10" fill="#9ca3af">top_artists · album_trends</text>
+  <text x="851" y="446" text-anchor="middle" font-size="10" fill="#9ca3af">release_patterns · playlist_insights</text>
+  <text x="851" y="462" text-anchor="middle" font-size="9" fill="#555">Window functions · CTEs · Rankings</text>
+  <text x="851" y="478" text-anchor="middle" font-size="9" fill="#555">dbt tests : not_null · unique · accepted_values</text>
+
+  <!-- Arrow BQ Gold → Looker -->
+  <line x1="716" y1="446" x2="620" y2="446" stroke="#444" stroke-width="1.5" marker-end="url(#arrL)"/>
+
+  <!-- ═══════════════════════════════════════════════════════
+       LOOKER STUDIO
+  ════════════════════════════════════════════════════════ -->
+  <rect x="422" y="396" width="194" height="110" rx="9"
+        fill="#4285F4" fill-opacity="0.12" stroke="#4285F4" stroke-width="1.5"/>
+  <text x="519" y="419" text-anchor="middle" font-size="12" font-weight="bold" fill="#60A5FA">Looker Studio</text>
+  <text x="519" y="438" text-anchor="middle" font-size="10" fill="#9ca3af">Top Artistes</text>
+  <text x="519" y="453" text-anchor="middle" font-size="10" fill="#9ca3af">Tendances Albums</text>
+  <text x="519" y="468" text-anchor="middle" font-size="10" fill="#9ca3af">Patterns de sortie</text>
+  <text x="519" y="483" text-anchor="middle" font-size="10" fill="#9ca3af">Insights Playlists</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       LEFT PANEL : Scripts + CI/CD
+  ════════════════════════════════════════════════════════ -->
+
+  <!-- Scripts label -->
+  <text x="215" y="218" text-anchor="middle" font-size="10" font-weight="bold" fill="#6b7280">
+    Scripts Python
+  </text>
+
+  <!-- pipeline.py -->
+  <rect x="38" y="226" width="165" height="46" rx="7"
+        fill="#3776AB" fill-opacity="0.18" stroke="#3776AB" stroke-width="1"/>
+  <text x="120" y="246" text-anchor="middle" font-size="10" font-weight="bold" fill="#60A5FA">pipeline.py</text>
+  <text x="120" y="261" text-anchor="middle" font-size="9" fill="#9ca3af">extraction CLI --resources</text>
+
+  <!-- run_sql_pipeline.py -->
+  <rect x="215" y="226" width="165" height="46" rx="7"
+        fill="#3776AB" fill-opacity="0.18" stroke="#3776AB" stroke-width="1"/>
+  <text x="297" y="246" text-anchor="middle" font-size="10" font-weight="bold" fill="#60A5FA">run_sql_pipeline.py</text>
+  <text x="297" y="261" text-anchor="middle" font-size="9" fill="#9ca3af">Bronze → Silver → Gold (SQL)</text>
+
+  <!-- run_full_harvest.py -->
+  <rect x="38" y="286" width="342" height="46" rx="7"
+        fill="#1DB954" fill-opacity="0.12" stroke="#1DB954" stroke-width="1"/>
+  <text x="209" y="307" text-anchor="middle" font-size="10" font-weight="bold" fill="#4ADE80">run_full_harvest.py</text>
+  <text x="209" y="322" text-anchor="middle" font-size="9" fill="#9ca3af">3 passes multi-queries + SQL (tout-en-un)</text>
+
+  <!-- flows/spotify_pipeline_flow.py -->
+  <rect x="38" y="346" width="342" height="58" rx="7"
+        fill="#1D4ED8" fill-opacity="0.18" stroke="#60A5FA" stroke-width="1"/>
+  <text x="209" y="367" text-anchor="middle" font-size="10" font-weight="bold" fill="#93C5FD">flows/spotify_pipeline_flow.py</text>
+  <text x="209" y="382" text-anchor="middle" font-size="9" fill="#9ca3af">Prefect @flow : extraction → dbt Silver</text>
+  <text x="209" y="396" text-anchor="middle" font-size="9" fill="#9ca3af">→ album_tracks → dbt Gold → dbt test</text>
+
+  <!-- CI/CD -->
+  <rect x="38" y="420" width="165" height="60" rx="7"
+        fill="#ffffff" fill-opacity="0.04" stroke="#374151" stroke-width="1"/>
+  <text x="120" y="441" text-anchor="middle" font-size="10" font-weight="bold" fill="#9ca3af">GitHub Actions CI</text>
+  <text x="120" y="457" text-anchor="middle" font-size="9" fill="#6b7280">pytest · pytest-cov</text>
+  <text x="120" y="471" text-anchor="middle" font-size="9" fill="#6b7280">flake8 · Python 3.11/3.12</text>
+
+  <!-- Docker -->
+  <rect x="215" y="420" width="165" height="60" rx="7"
+        fill="#ffffff" fill-opacity="0.04" stroke="#374151" stroke-width="1"/>
+  <text x="297" y="441" text-anchor="middle" font-size="10" font-weight="bold" fill="#9ca3af">Docker</text>
+  <text x="297" y="457" text-anchor="middle" font-size="9" fill="#6b7280">multi-stage build</text>
+  <text x="297" y="471" text-anchor="middle" font-size="9" fill="#6b7280">pipeline · dbt · test</text>
+
+  <!-- Key features box -->
+  <rect x="38" y="496" width="342" height="90" rx="7"
+        fill="#ffffff" fill-opacity="0.03" stroke="#374151" stroke-width="1"/>
+  <text x="209" y="515" text-anchor="middle" font-size="10" font-weight="bold" fill="#6b7280">Fonctionnalités clés</text>
+  <text x="55" y="532" font-size="9" fill="#9ca3af">✓  Retry exponentiel (tenacity) + gestion rate limit 429</text>
+  <text x="55" y="547" font-size="9" fill="#9ca3af">✓  Token OAuth cache avec TTL automatique</text>
+  <text x="55" y="562" font-size="9" fill="#9ca3af">✓  dbt : tests qualité not_null · unique · accepted_values</text>
+  <text x="55" y="577" font-size="9" fill="#9ca3af">✓  Prefect : schedule hebdomadaire · retry · observabilité</text>
+
+</svg>

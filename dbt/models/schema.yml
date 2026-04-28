@@ -1,0 +1,192 @@
+version: 2
+
+# ─────────────────────────────────────────────────────────────
+# SILVER models
+# ─────────────────────────────────────────────────────────────
+models:
+  - name: stg_artists
+    description: "Artistes nettoyés et dédupliqués depuis la couche Bronze."
+    columns:
+      - name: id
+        description: "Identifiant unique Spotify de l'artiste."
+        tests:
+          - not_null
+          - unique
+      - name: name
+        description: "Nom de l'artiste (trimé)."
+        tests:
+          - not_null
+      - name: spotify_url
+        description: "URL du profil Spotify."
+      - name: image_url
+        description: "URL de la photo (résolution maximale)."
+      - name: extraction_date
+        description: "Date d'extraction (partition BigQuery)."
+        tests:
+          - not_null
+      - name: extraction_timestamp
+        description: "Timestamp précis d'extraction."
+        tests:
+          - not_null
+
+  - name: stg_albums
+    description: "Albums nettoyés et dédupliqués depuis la couche Bronze."
+    columns:
+      - name: id
+        description: "Identifiant unique Spotify de l'album."
+        tests:
+          - not_null
+          - unique
+      - name: name
+        description: "Titre de l'album."
+        tests:
+          - not_null
+      - name: album_type
+        description: "Type d'album (album, single, compilation)."
+        tests:
+          - accepted_values:
+              values: ['album', 'single', 'compilation']
+      - name: total_tracks
+        description: "Nombre total de titres."
+      - name: release_date
+        description: "Date de sortie officielle."
+      - name: primary_artist_id
+        description: "ID Spotify du premier artiste principal."
+      - name: primary_artist_name
+        description: "Nom du premier artiste principal."
+      - name: extraction_date
+        description: "Date d'extraction."
+        tests:
+          - not_null
+
+  - name: stg_tracks
+    description: >
+      Titres unifiés depuis deux sources Bronze :
+      recherche Spotify (/search) et extraction album (/albums/{id}/tracks).
+      Dédupliqués par id, en gardant la version la plus récente.
+    columns:
+      - name: id
+        description: "Identifiant unique Spotify du titre."
+        tests:
+          - not_null
+          - unique
+      - name: name
+        description: "Titre de la chanson."
+        tests:
+          - not_null
+      - name: duration_ms
+        description: "Durée en millisecondes."
+      - name: duration_min
+        description: "Durée en minutes (arrondie à 2 décimales)."
+      - name: explicit
+        description: "Indique si le titre contient du contenu explicite."
+      - name: album_id
+        description: "ID de l'album contenant le titre."
+      - name: primary_artist_id
+        description: "ID Spotify de l'artiste principal."
+      - name: extraction_date
+        description: "Date d'extraction."
+        tests:
+          - not_null
+
+  - name: stg_playlists
+    description: "Playlists nettoyées et dédupliquées depuis la couche Bronze."
+    columns:
+      - name: id
+        description: "Identifiant unique Spotify de la playlist."
+        tests:
+          - not_null
+          - unique
+      - name: name
+        description: "Nom de la playlist."
+        tests:
+          - not_null
+      - name: track_count
+        description: "Nombre de titres dans la playlist."
+      - name: owner_id
+        description: "ID Spotify du propriétaire."
+      - name: is_public
+        description: "Indique si la playlist est publique."
+      - name: extraction_date
+        description: "Date d'extraction."
+        tests:
+          - not_null
+
+# ─────────────────────────────────────────────────────────────
+# GOLD models
+# ─────────────────────────────────────────────────────────────
+  - name: top_artists
+    description: >
+      Vue agrégée des artistes avec leurs métriques clés :
+      nombre de titres, albums, durée moyenne, span de carrière.
+    columns:
+      - name: artist_id
+        description: "Identifiant Spotify de l'artiste."
+        tests:
+          - not_null
+          - unique
+      - name: artist_name
+        description: "Nom de l'artiste."
+        tests:
+          - not_null
+      - name: total_tracks
+        description: "Nombre total de titres (0 si aucun)."
+        tests:
+          - not_null
+      - name: total_albums
+        description: "Nombre total d'albums (0 si aucun)."
+        tests:
+          - not_null
+
+  - name: album_trends
+    description: >
+      Tendances de sortie d'albums par mois/année/type.
+      Inclut des window functions pour les totaux cumulés et les parts.
+    columns:
+      - name: release_year
+        description: "Année de sortie."
+      - name: release_month
+        description: "Mois de sortie (1-12)."
+      - name: year_month
+        description: "Période au format YYYY-MM."
+      - name: album_count
+        description: "Nombre d'albums sortis sur la période."
+      - name: cumulative_albums_in_year
+        description: "Total cumulé d'albums dans l'année jusqu'au mois en cours."
+      - name: pct_of_year_by_type
+        description: "Part (%) du type d'album dans l'année."
+
+  - name: release_patterns
+    description: >
+      Analyse des patterns de sortie : saisonnalité, jours de la semaine,
+      cadence artiste (moyenne de jours entre sorties).
+    columns:
+      - name: release_year
+        description: "Année de sortie."
+      - name: releases_count
+        description: "Nombre de sorties dans la combinaison (année/mois/jour/type/artiste)."
+      - name: pct_friday
+        description: "Pourcentage de sorties un vendredi."
+      - name: avg_days_between_releases
+        description: "Cadence moyenne de l'artiste en jours entre deux sorties."
+
+  - name: playlist_insights
+    description: >
+      Segmentation des playlists par taille, visibilité et collaboration.
+      Utilise APPROX_QUANTILES pour la médiane et ARRAY_AGG pour le top propriétaire.
+    columns:
+      - name: size_bucket
+        description: "Segment de taille de la playlist."
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 'micro (< 10)'
+                - 'small (10-49)'
+                - 'medium (50-199)'
+                - 'large (200-999)'
+                - 'mega (1000+)'
+      - name: playlist_count
+        description: "Nombre de playlists dans le segment."
+      - name: pct_of_total
+        description: "Part (%) du segment sur le total."

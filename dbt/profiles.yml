@@ -1,0 +1,22 @@
+spotify_elt:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth                  # utilise gcloud auth application-default login
+      project: "{{ env_var('GCP_PROJECT_ID') }}"
+      dataset: spotify_silver        # dataset par défaut (overridé par +schema dans dbt_project.yml)
+      location: EU
+      threads: 4
+      timeout_seconds: 300
+      priority: interactive
+    prod:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('GCP_PROJECT_ID') }}"
+      dataset: spotify_silver
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS', '') }}"
+      location: EU
+      threads: 4
+      timeout_seconds: 300
+      priority: batch

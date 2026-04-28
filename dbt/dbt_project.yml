@@ -1,0 +1,24 @@
+name: spotify_elt
+version: "1.0.0"
+config-version: 2
+
+profile: spotify_elt
+
+model-paths: ["models"]
+seed-paths:  ["seeds"]
+test-paths:  ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  spotify_elt:
+    silver:
+      +materialized: table
+      +schema: spotify_silver
+    gold:
+      +materialized: table
+      +schema: spotify_gold
